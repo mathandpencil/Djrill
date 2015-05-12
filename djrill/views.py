@@ -210,7 +210,12 @@ class DjrillWebhookView(DjrillWebhookSecretMixin, DjrillWebhookSignatureMixin, V
             return HttpResponse(status=400)
 
         for event in data:
+            try:
+                event_type = event['event']
+            except KeyError:
+                event_type = event['type']
+
             signals.webhook_event.send(
-                sender=None, event_type=event['event'], data=event)
+                sender=None, event_type=event_type, data=event)
 
         return HttpResponse()
